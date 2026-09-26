@@ -1,0 +1,50 @@
+class Solution:
+    def maxPathScore(self, grid: List[List[int]], k: int) -> int:
+        m = len(grid)
+        n = len(grid[0])
+
+        # dp[i][j][cost] = maximum score
+        # to reach (i, j) using exactly 'cost'
+        dp = [[[-1] * (k + 1) for _ in range(n)] for _ in range(m)]
+
+        # Starting cell
+        dp[0][0][0] = 0
+
+        for i in range(m):
+            for j in range(n):
+
+                if i == 0 and j == 0:
+                    continue
+
+                value = grid[i][j]
+
+                # 0 -> cost 0
+                # 1 -> cost 1
+                # 2 -> cost 1
+                cell_cost = 0 if value == 0 else 1
+
+                for cost in range(k + 1):
+
+                    if dp[i][j][cost] != -1:
+                        continue
+
+                    new_cost = cost + cell_cost
+
+                    if new_cost > k:
+                        continue
+
+                    # From top
+                    if i > 0 and dp[i - 1][j][cost] != -1:
+                        dp[i][j][new_cost] = max(
+                            dp[i][j][new_cost],
+                            dp[i - 1][j][cost] + value
+                        )
+
+                    # From left
+                    if j > 0 and dp[i][j - 1][cost] != -1:
+                        dp[i][j][new_cost] = max(
+                            dp[i][j][new_cost],
+                            dp[i][j - 1][cost] + value
+                        )
+
+        return max(dp[m - 1][n - 1])
